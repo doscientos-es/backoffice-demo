@@ -1,6 +1,6 @@
 import { createCipheriv, createHmac } from 'node:crypto'
 
-import { serverEnv } from '@/lib/env'
+import { o } from '@/lib/env'
 
 /**
  * Redsys / Paygold (BBVA) integration helper.
@@ -30,7 +30,8 @@ const REDSYS_URLS = {
 
 export function getRedsysUrl(): string {
   const env = serverEnv()
-  return REDSYS_URLS[env.REDSYS_ENVIRONMENT]
+  const environment: keyof typeof REDSYS_URLS = env.REDSYS_ENVIRONMENT === 'prod' ? 'prod' : 'test'
+  return REDSYS_URLS[environment]
 }
 
 /**
