@@ -1,6 +1,6 @@
 import { createCipheriv, createHmac } from 'node:crypto'
 
-import { o } from '@/lib/env'
+import { serverEnv } from '@/lib/env'
 
 /**
  * Redsys / Paygold (BBVA) integration helper.
