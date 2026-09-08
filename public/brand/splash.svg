@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920">
+  <title>Splash screen doscientos backoffice</title>
+  <defs>
+    <linearGradient id="bg" x1="100" y1="0" x2="980" y2="1920" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2a4227"/><stop offset=".58" stop-color="#1d321c"/><stop offset="1" stop-color="#102010"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#bg)"/>
+  <circle cx="930" cy="220" r="330" fill="#bdff7b" opacity=".14"/>
+  <circle cx="100" cy="1710" r="420" fill="#628b57" opacity=".18"/>
+  <g transform="translate(345 730) scale(.454)">
+    <rect width="858.204" height="858" fill="#BDFF7B"/>
+    <path d="M144.518 317.011C174.22 317.011 202.704 328.81 223.706 349.812C244.708 370.814 256.507 399.299 256.507 429C256.507 458.701 244.708 487.186 223.706 508.188C202.704 529.19 174.22 540.989 144.519 540.989H110.5V317.011L144.518 317.011Z" fill="#0C110B"/>
+    <circle cx="389.757" cy="429" r="111.989" fill="#0C110B"/>
+    <circle cx="634.996" cy="429" r="111.989" fill="#0C110B"/>
+  </g>
+  <text x="540" y="1285" fill="#f8faf7" font-family="Arial, sans-serif" font-size="74" font-weight="700" letter-spacing="-2">doscientos</text>
+  <text x="540" y="1360" fill="#bdff7b" font-family="Arial, sans-serif" font-size="36" font-weight="700" letter-spacing="8">BACKOFFICE</text>
+</svg>

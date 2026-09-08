@@ -1,0 +1,38 @@
+'use client'
+
+import { TriangleAlert as AlertTriangle } from 'lucide-react'
+import Link from 'next/link'
+
+import { Button } from '@/components/ui/button'
+
+/** Keeps a failed proposal detail isolated from the rest of the app shell. */
+export default function ProposalDetailError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-6 py-24 text-center">
+      <div className="bg-destructive/10 flex size-16 items-center justify-center rounded-2xl">
+        <AlertTriangle className="text-destructive size-8" />
+      </div>
+      <div className="flex flex-col gap-2">
+        <h1 className="text-xl font-semibold">Error al cargar la propuesta</h1>
+        <p className="text-muted-foreground max-w-sm text-sm">
+          No se ha podido cargar esta propuesta. Inténtalo de nuevo o vuelve al listado.
+        </p>
+        {error.digest && <p className="text-muted-foreground text-xs">ID: {error.digest}</p>}
+      </div>
+      <div className="flex gap-2">
+        <Button onClick={reset} size="sm">
+          Reintentar
+        </Button>
+        <Button variant="outline" size="sm" asChild>
+          <Link href="/proposals">Volver a propuestas</Link>
+        </Button>
+      </div>
+    </div>
+  )
+}

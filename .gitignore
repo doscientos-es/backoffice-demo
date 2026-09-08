@@ -1,0 +1,18 @@
+# Dependencies and build artifacts
+node_modules/
+.next/
+out/
+coverage/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# Local tooling
+*.log
+.DS_Store
+*.tsbuildinfo
