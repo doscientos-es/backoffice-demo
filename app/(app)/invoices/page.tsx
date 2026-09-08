@@ -84,7 +84,7 @@ export default async function InvoicesPage({
             <StatCard
               label="Pendientes de cobro"
               value={formatEUR(pendingTotal)}
-              density="compact"
+              density="inline"
               tone="info"
               icon={Clock}
               hint={`${pendingCount} ${pendingCount === 1 ? "factura emitida" : "facturas emitidas"}`}
@@ -93,7 +93,7 @@ export default async function InvoicesPage({
             <StatCard
               label="Vencidas"
               value={formatEUR(overdueTotal)}
-              density="compact"
+              density="inline"
               tone="danger"
               icon={AlertTriangle}
               hint={`${overdueCount} ${overdueCount === 1 ? "factura vencida" : "facturas vencidas"}`}
@@ -102,7 +102,7 @@ export default async function InvoicesPage({
             <StatCard
               label="Cobrado este mes"
               value={formatEUR(paidMonthTotal)}
-              density="compact"
+              density="inline"
               tone="success"
               icon={CheckCircle2}
               hint={`Desde ${formatDate(monthStart)}`}
@@ -110,7 +110,7 @@ export default async function InvoicesPage({
             <StatCard
               label="Verifactu KO"
               value={verifactuKoCount}
-              density="compact"
+              density="inline"
               tone={verifactuKoCount > 0 ? "danger" : "default"}
               icon={ShieldAlert}
               hint="Rechazadas por AEAT"
@@ -125,7 +125,7 @@ export default async function InvoicesPage({
               <StatCard
                 label="Cola pendiente"
                 value={aeatHealth.queueAvailable ? aeatHealth.pending : "—"}
-                density="compact"
+                density="inline"
                 tone={aeatHealth.pending > 0 ? "warning" : "default"}
                 icon={Send}
                 hint="En espera o procesando"
@@ -133,7 +133,7 @@ export default async function InvoicesPage({
               <StatCard
                 label="Reintentos"
                 value={aeatHealth.queueAvailable ? aeatHealth.retrying : "—"}
-                density="compact"
+                density="inline"
                 tone={aeatHealth.retrying > 0 ? "warning" : "default"}
                 icon={RefreshCcw}
                 hint="Errores técnicos recuperables"
@@ -142,7 +142,7 @@ export default async function InvoicesPage({
               <StatCard
                 label="Bloqueadas"
                 value={aeatHealth.queueAvailable ? aeatHealth.blocked : "—"}
-                density="compact"
+                density="inline"
                 tone={aeatHealth.blocked > 0 ? "danger" : "default"}
                 icon={AlertTriangle}
                 hint="Rechazo o error definitivo"
@@ -151,7 +151,7 @@ export default async function InvoicesPage({
               <StatCard
                 label="Diagnóstico AEAT"
                 value={aeatHealth.diagnostic.status === "passed" ? "Vigente" : "Revisar"}
-                density="compact"
+                density="inline"
                 tone={aeatHealth.diagnostic.status === "passed" ? "success" : "danger"}
                 icon={Activity}
                 hint="Suite sintética obligatoria"
@@ -164,7 +164,7 @@ export default async function InvoicesPage({
                     ? "Sin fecha"
                     : `${aeatHealth.certificate.daysRemaining} días`
                 }
-                density="compact"
+                density="inline"
                 tone={
                   aeatHealth.certificate.status === "ok"
                     ? "success"

@@ -19,7 +19,7 @@ export type StatCardProps = {
   label: string
   value: number | string
   /** Reduces padding and type scale for dense dashboard summaries. */
-  density?: 'default' | 'compact'
+  density?: 'default' | 'compact' | 'inline'
   tone?: StatTone
   icon?: ComponentType<SVGProps<SVGSVGElement>>
   hint?: string
@@ -75,7 +75,8 @@ export function StatCard({
   trend,
   goal,
 }: StatCardProps) {
-  const compact = density === 'compact'
+  const compact = density !== 'default'
+  const inline = density === 'inline'
   const displayValue =
     typeof value === 'number' ? new Intl.NumberFormat('es-ES').format(value) : value
   const TrendIcon = trend && !goal ? TREND_ICON[trend.direction] : null
@@ -85,30 +86,49 @@ export function StatCard({
   const card = (
     <Card
       size={compact ? 'sm' : 'default'}
+      data-density={density}
       className={cn(
         'h-full transition-colors hover:bg-muted/80',
+        inline && 'py-2',
         href && 'cursor-pointer hover:ring-foreground/10',
       )}
     >
-      <CardContent className={cn('flex items-start justify-between', compact ? 'gap-2 pt-3' : 'gap-3 pt-5')}>
+      <CardContent
+        className={cn(
+          'flex justify-between',
+          inline ? 'items-center gap-2 py-0' : compact ? 'items-start gap-2 pt-3' : 'items-start gap-3 pt-5',
+        )}
+      >
+        {inline && Icon ? (
+          <div
+            className={cn(
+              'flex size-6 shrink-0 items-center justify-center rounded-md',
+              TONE_ICON[tone],
+            )}
+          >
+            <Icon className="size-3" />
+          </div>
+        ) : null}
         <div className="min-w-0 flex-1">
           <div
             className={cn(
               'text-muted-foreground font-medium tracking-wide uppercase',
-              compact ? 'text-[11px] leading-4' : 'text-xs',
+              inline ? 'truncate text-[10px] leading-3' : compact ? 'text-[11px] leading-4' : 'text-xs',
             )}
           >
             {label}
           </div>
-          <div
-            className={cn(
-              'truncate font-semibold tracking-tight tabular-nums',
-              compact ? 'mt-0.5 text-xl leading-6' : 'mt-1.5 text-2xl',
-              TONE_VALUE[tone],
-            )}
-          >
-            {displayValue}
-          </div>
+          {!inline ? (
+            <div
+              className={cn(
+                'truncate font-semibold tracking-tight tabular-nums',
+                compact ? 'mt-0.5 text-xl leading-6' : 'mt-1.5 text-2xl',
+                TONE_VALUE[tone],
+              )}
+            >
+              {displayValue}
+            </div>
+          ) : null}
 
           {/* Goal progress bar — replaces trend when a goal is set */}
           {goalPct !== null ? (
@@ -148,14 +168,29 @@ export function StatCard({
             <div
               className={cn(
                 'text-muted-foreground',
-                compact ? 'mt-0.5 text-[11px] leading-4' : 'mt-1 text-xs',
+                inline
+                  ? 'mt-0.5 truncate text-[10px] leading-3'
+                  : compact
+                    ? 'mt-0.5 text-[11px] leading-4'
+                    : 'mt-1 text-xs',
               )}
+              title={inline ? hint : undefined}
             >
               {hint}
             </div>
           ) : null}
         </div>
-        {Icon ? (
+        {inline ? (
+          <div
+            className={cn(
+              'shrink-0 truncate font-semibold tracking-tight tabular-nums text-lg leading-5',
+              TONE_VALUE[tone],
+            )}
+          >
+            {displayValue}
+          </div>
+        ) : null}
+        {!inline && Icon ? (
           <div
             className={cn(
               'flex shrink-0 items-center justify-center',

@@ -25,4 +25,14 @@ describe('StatCard', () => {
     expect(card?.getAttribute('data-size')).toBe('sm')
     expect(screen.getByText('399,30 €').className).toContain('text-xl')
   })
+
+  it('keeps supporting text while using the inline density', () => {
+    render(<StatCard label="Pendientes" value="399,30 €" hint="2 facturas emitidas" density="inline" />)
+
+    const card = screen.getByText('Pendientes').closest('[data-slot="card"]')
+    expect(card?.getAttribute('data-density')).toBe('inline')
+    expect(card?.className).toContain('py-2')
+    expect(screen.getByText('399,30 €').className).toContain('text-lg')
+    expect(screen.getByText('2 facturas emitidas').getAttribute('title')).toBe('2 facturas emitidas')
+  })
 })
