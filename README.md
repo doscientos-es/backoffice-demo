@@ -15,4 +15,8 @@ Copia del backoffice real preparada para demostraciones públicas.
 
 Ejecuta `pnpm install` y después `pnpm dev`. La demo se abre en `http://localhost:3000`.
 
-Los datos se reinician al reiniciar el proceso. Las mutaciones son simuladas y nunca salen del equipo. suap
+Los datos se reinician al reiniciar el proceso. Las mutaciones son simuladas y nunca salen del equipo.
+
+La navegación principal está enfocada en los flujos que se enseñan a un lead:
+captación, contactos, propuestas, proyectos y facturación. Los módulos de correo,
+pagos, IA y marketing no forman parte de este recorrido público.

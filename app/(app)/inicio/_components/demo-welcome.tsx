@@ -44,7 +44,7 @@ const STEPS = [
 
 export function DemoWelcome() {
   const [activeStep, setActiveStep] = useState(0)
-  const step = STEPS[activeStep]
+  const step = STEPS[activeStep] ?? STEPS[0]
   const Icon = step.icon
 
   return (
@@ -96,12 +96,7 @@ export function DemoWelcome() {
                   type="button"
                   aria-pressed={selected}
                   onClick={() => setActiveStep(index)}
-                  className={cn(
-                    'rounded-xl border p-3 text-left transition-all',
-                    selected
-                      ? 'border-primary/35 bg-primary/8 shadow-sm'
-                      : 'border-transparent hover:border-border hover:bg-muted/60',
-                  )}
+                  className={`rounded-xl border p-3 text-left transition-all ${selected ? 'border-primary/35 bg-primary/8 shadow-sm' : 'border-transparent hover:border-border hover:bg-muted/60'}`}
                 >
                   <ItemIcon className={`mb-3 size-4 ${item.color}`} />
                   <span className="block text-sm font-semibold">{item.label}</span>
