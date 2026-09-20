@@ -12,8 +12,6 @@ import {
 import Link from 'next/link'
 import { useState } from 'react'
 
-import { cn } from '@/lib/utils'
-
 const STEPS = [
   {
     label: 'Captar',
@@ -105,7 +103,7 @@ export function DemoWelcome() {
                       : 'border-transparent hover:border-border hover:bg-muted/60',
                   )}
                 >
-                  <ItemIcon className={cn('mb-3 size-4', item.color)} />
+                  <ItemIcon className={`mb-3 size-4 ${item.color}`} />
                   <span className="block text-sm font-semibold">{item.label}</span>
                   <span className="text-muted-foreground mt-1 block text-xs leading-5">{item.metric}</span>
                 </button>
@@ -114,7 +112,7 @@ export function DemoWelcome() {
           </div>
           <div className="border-border/70 mt-3 flex items-start gap-3 border-t px-2 pt-3">
             <div className="bg-muted mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg">
-              <Icon className={cn('size-4', step.color)} />
+              <Icon className={`size-4 ${step.color}`} />
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold">{step.title}</p>
