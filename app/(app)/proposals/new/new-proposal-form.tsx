@@ -151,14 +151,17 @@ export function NewProposalForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="mx-auto flex w-full max-w-6xl flex-col gap-6">
       <Card>
-        <CardContent className="pt-6">
-          <p className="text-muted-foreground mb-4 text-xs">
-            Solo el destinatario es obligatorio. Puedes completar el resto ahora o abrir el borrador
-            y editarlo después.
-          </p>
-          <div className="grid gap-5 sm:grid-cols-2">
+        <CardContent className="flex flex-col gap-6 pt-6">
+          <div>
+            <h2 className="text-base font-semibold">Datos de la propuesta</h2>
+            <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
+              Elige a quién va dirigida y añade el contexto mínimo. Podrás completar el detalle del
+              asunto después, sin perder este borrador.
+            </p>
+          </div>
+          <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
             <FormRow
               label="Destinatario"
               htmlFor="recipient"
@@ -177,9 +180,15 @@ export function NewProposalForm({
                 ]}
                 value={recipientValue}
                 onChange={onRecipientChange}
-                placeholder="Buscar cliente o lead…"
+                placeholder={clients.length || leads.length ? 'Buscar cliente o lead…' : 'No hay clientes o leads disponibles'}
                 required
               />
+              {leads.length === 0 ? (
+                <p className="text-muted-foreground text-xs">
+                  No hay leads activos cargados. Puedes crear uno desde{' '}
+                  <Link href="/leads" className="text-primary hover:underline">Leads</Link>.
+                </p>
+              ) : null}
             </FormRow>
             <FormRow label="Título" htmlFor="title">
               <Input
@@ -214,14 +223,25 @@ export function NewProposalForm({
       </Card>
 
       <Card>
-        <CardContent className="pt-6">
-          <h2 className="mb-4 text-sm font-semibold">Líneas</h2>
+        <CardContent className="flex flex-col gap-4 pt-6">
+          <div>
+            <h2 className="text-base font-semibold">Qué incluye</h2>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Añade los servicios o partidas de la proforma. Los importes se calculan automáticamente.
+            </p>
+          </div>
           <LineItemsTable items={items} onChange={setItems} showBillingCycle />
         </CardContent>
       </Card>
 
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="flex flex-col gap-4 pt-6">
+          <div>
+            <h2 className="text-base font-semibold">Notas y condiciones</h2>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Aclara alcance, exclusiones, forma de pago o cualquier contexto que deba quedar por escrito.
+            </p>
+          </div>
           <FormRow
             label="Notas"
             htmlFor="notes"

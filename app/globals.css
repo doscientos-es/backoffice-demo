@@ -3,6 +3,25 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
+/*
+ * Overlay stacking policy.
+ *
+ * A searchable filter is often rendered inside another popover (for example
+ * Contacts > Filters > Naturaleza). Both surfaces used to resolve to z-50,
+ * which made the inner list lose against its parent in some stacking
+ * contexts. Keep the levels intentional: contextual popovers first,
+ * interactive dropdowns above them, and modal layers above everything.
+ */
+[data-slot='popover'] {
+  z-index: 50;
+}
+
+[data-slot='combobox-content'],
+[data-slot='select-content'],
+[data-slot='menu-content'] {
+  z-index: 60 !important;
+}
+
 #startup-splash {
   position: fixed;
   inset: 0;

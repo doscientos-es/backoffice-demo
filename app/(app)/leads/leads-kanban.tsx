@@ -16,7 +16,6 @@ import {
   CalendarDays as CalendarClock,
   CalendarPlus,
   Funnel as Filter,
-  GripVertical,
   History as HistoryIcon,
   Hourglass,
   Mail,
@@ -32,6 +31,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useOptimistic, useState, useTransition } from "react";
 
 import { Badge } from "@/components/ui/badge";
+import { KanbanDragHandle } from "@/components/ui/kanban-drag-handle";
 import { EntityAvatar } from "@/components/ui/entity-avatar";
 import { FormFeedback, useFormFeedback } from "@/components/ui/form-feedback";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
@@ -557,17 +557,7 @@ function Card({
     >
       <div className="flex items-start gap-2">
         {canEdit ? (
-          <button
-            ref={setActivatorNodeRef}
-            type="button"
-            {...attributes}
-            {...listeners}
-            aria-label={`Arrastrar ${leadDisplayName(lead)}`}
-            title="Arrastrar lead"
-            className="text-muted-foreground/45 hover:text-foreground focus-visible:ring-ring/50 mt-0.5 shrink-0 cursor-grab touch-none rounded focus-visible:ring-2 focus-visible:outline-none active:cursor-grabbing"
-          >
-            <GripVertical className="size-3.5" aria-hidden />
-          </button>
+          <KanbanDragHandle label={leadDisplayName(lead)} setActivatorNodeRef={setActivatorNodeRef} attributes={attributes} listeners={listeners} />
         ) : null}
         <LeadAvatar lead={lead} />
         <div className="min-w-0 flex-1">
@@ -646,6 +636,11 @@ function Card({
         >
           <span className="font-medium">Pérdida:</span> {lead.lost_reason}
         </p>
+      ) : null}
+      {!isOverlay && onOpenQuickView ? (
+        <button type="button" onClick={() => onOpenQuickView(lead.id)} className="text-primary inline-flex items-center gap-1 self-start pl-8 text-xs font-medium hover:underline">
+          Ver ficha del lead <span aria-hidden>→</span>
+        </button>
       ) : null}
       <div className="flex items-center justify-between gap-1.5 pl-8">
         <div className="flex items-center gap-1.5">

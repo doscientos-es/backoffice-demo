@@ -19,6 +19,7 @@ import { useOptimistic, useState, useTransition } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { FormFeedback, useFormFeedback } from '@/components/ui/form-feedback'
 import { StatusBadge } from '@/components/ui/status-badge'
+import { KanbanDragHandle } from '@/components/ui/kanban-drag-handle'
 import { type TaskPriority as SharedTaskPriority, TASK_PRIORITY } from '@/lib/status'
 import { cn, formatDate, relativeTime } from '@/lib/utils'
 
@@ -56,7 +57,7 @@ const COLUMNS: { id: TaskStatus; label: string; tone: string; dot: string }[] = 
   },
   {
     id: 'done',
-    label: 'Terminada',
+    label: 'Completadas',
     tone: 'text-emerald-700 dark:text-emerald-300',
     dot: 'bg-emerald-500',
   },
@@ -205,7 +206,7 @@ function Column({
     <div
       ref={setNodeRef}
       className={cn(
-        'flex w-72 shrink-0 flex-col rounded-xl bg-card ring-1 ring-foreground/10 transition-colors',
+        'flex min-w-72 flex-1 flex-col rounded-xl bg-card ring-1 ring-foreground/10 transition-colors',
         isOver && 'ring-2 ring-primary/40 bg-primary/5',
       )}
     >
@@ -231,14 +232,12 @@ function Column({
 }
 
 function TaskCard({ task, isOverlay = false }: { task: KanbanTask; isOverlay?: boolean }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: task.id })
+  const { attributes, listeners, setActivatorNodeRef, setNodeRef, isDragging } = useDraggable({ id: task.id })
   const overdue = isOverdue(task)
 
   return (
     <div
       ref={setNodeRef}
-      {...attributes}
-      {...listeners}
       className={cn(
         'group rounded-lg border border-border bg-background p-2.5 shadow-xs transition',
         'hover:border-foreground/20 hover:shadow-sm',
@@ -247,11 +246,12 @@ function TaskCard({ task, isOverlay = false }: { task: KanbanTask; isOverlay?: b
         overdue && 'ring-1 ring-red-400/40',
       )}
     >
-      <div className="flex items-start justify-between gap-2">
+      <div className="flex items-start gap-1">
+        {!isOverlay ? <KanbanDragHandle label={task.title} setActivatorNodeRef={setActivatorNodeRef} attributes={attributes} listeners={listeners} /> : null}
         <Link
           href={`/tasks/${task.id}`}
           onPointerDown={(e) => e.stopPropagation()}
-          className="line-clamp-2 text-sm leading-snug font-medium hover:underline"
+          className="min-w-0 flex-1 line-clamp-2 text-sm leading-snug font-medium hover:text-primary hover:underline"
         >
           {task.title}
         </Link>

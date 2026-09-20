@@ -24,6 +24,7 @@ import { updateProjectPortalAccess } from '../actions'
 import { GitHubModeBadge } from '../github-mode-badge'
 import type { GitHubSyncMode } from '../github-sync-section'
 import { AiKickoffPanel } from './ai-kickoff-panel'
+import { CasePulse } from './case-pulse'
 import { type ChecklistItemRow, ChecklistSection } from './checklist-section'
 import { ClientUpdatePanel } from './client-update-panel'
 import { DeleteProjectButton } from './delete-project-button'
@@ -132,7 +133,7 @@ export default async function ProjectDetailPage({
   })
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex w-full max-w-none flex-col gap-6">
       <PageHeader
         title={project.name as string}
         description={client?.name}
@@ -205,6 +206,15 @@ export default async function ProjectDetailPage({
             {canEdit ? <DeleteProjectButton projectId={project.id as string} /> : null}
           </div>
         }
+      />
+
+      <CasePulse
+        status={String(project.status)}
+        updatedAt={(project.updated_at as string | null) ?? null}
+        description={(project.description as string | null) ?? null}
+        tasks={(tasks ?? []).map((task) => ({ id: String(task.id), title: String(task.title), status: String(task.status), due_date: (task.due_date as string | null) ?? null }))}
+        checklist={(checklistData ?? []).map((item) => ({ id: String(item.id), label: String(item.label), is_done: Boolean(item.is_done) }))}
+        clientRequests={(clientRequests ?? []).map((item) => ({ id: String(item.id), subject: String(item.subject), status: String(item.status) }))}
       />
 
       <Card>
@@ -326,7 +336,7 @@ export default async function ProjectDetailPage({
         </Card>
       ) : null}
 
-      <Card>
+      <Card id="tasks">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Tareas</CardTitle>
           <div className="flex items-center gap-2">
@@ -384,7 +394,7 @@ export default async function ProjectDetailPage({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card id="client-requests">
         <CardHeader>
           <CardTitle>Solicitudes del cliente</CardTitle>
         </CardHeader>
@@ -440,11 +450,13 @@ export default async function ProjectDetailPage({
         />
       ) : null}
 
-      <ChecklistSection
+      <div id="checklist">
+        <ChecklistSection
         projectId={id}
         items={(checklistData as ChecklistItemRow[] | null) ?? []}
         canEdit={canEdit}
-      />
+        />
+      </div>
 
       <Card>
         <CardHeader>

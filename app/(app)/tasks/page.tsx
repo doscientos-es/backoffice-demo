@@ -83,7 +83,7 @@ export default async function TasksPage({
     const tasks = items as KanbanTask[]
 
     return (
-      <div className="flex flex-col gap-5">
+      <div className="flex w-full max-w-none flex-col gap-5">
         <PageHeader
           title="Tareas"
           description="Organiza el trabajo del equipo y relaciónalo opcionalmente con proyectos, leads o clientes."

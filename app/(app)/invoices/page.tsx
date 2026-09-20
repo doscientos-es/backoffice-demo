@@ -77,7 +77,7 @@ export default async function InvoicesPage({
   return (
     <ListPage
       title="Facturas"
-      description="Consulta el estado de cobro y el envío de cada factura a Verifactu."
+      description="Emite, revisa y sigue el estado de cada factura desde una única bandeja."
       summary={
         <div className="space-y-3">
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
@@ -119,7 +119,7 @@ export default async function InvoicesPage({
           </div>
           <section aria-labelledby="aeat-health-title" className="space-y-1.5">
             <h2 id="aeat-health-title" className="text-xs font-semibold">
-              Salud operativa AEAT
+              Control fiscal de la demo
             </h2>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-5">
               <StatCard
@@ -128,7 +128,7 @@ export default async function InvoicesPage({
                 density="inline"
                 tone={aeatHealth.pending > 0 ? "warning" : "default"}
                 icon={Send}
-                hint="En espera o procesando"
+                hint="Cola local de demostración"
               />
               <StatCard
                 label="Reintentos"
@@ -136,7 +136,7 @@ export default async function InvoicesPage({
                 density="inline"
                 tone={aeatHealth.retrying > 0 ? "warning" : "default"}
                 icon={RefreshCcw}
-                hint="Errores técnicos recuperables"
+                hint="Incidencias recuperables"
                 href="/invoices?verifactu=error"
               />
               <StatCard
@@ -145,7 +145,7 @@ export default async function InvoicesPage({
                 density="inline"
                 tone={aeatHealth.blocked > 0 ? "danger" : "default"}
                 icon={AlertTriangle}
-                hint="Rechazo o error definitivo"
+                hint="Revisión necesaria"
                 href="/invoices?verifactu=rejected"
               />
               <StatCard
@@ -154,7 +154,7 @@ export default async function InvoicesPage({
                 density="inline"
                 tone={aeatHealth.diagnostic.status === "passed" ? "success" : "danger"}
                 icon={Activity}
-                hint="Suite sintética obligatoria"
+                hint="Comprobación simulada"
                 href="/settings/diagnostics"
               />
               <StatCard
@@ -173,7 +173,7 @@ export default async function InvoicesPage({
                       : "danger"
                 }
                 icon={KeyRound}
-                hint="Vigencia del certificado P12"
+                hint="Configuración de la demo"
                 href="/settings"
               />
             </div>

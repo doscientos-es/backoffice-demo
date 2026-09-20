@@ -31,6 +31,7 @@ import { TaskCreateDialog } from '../../tasks/task-create-dialog'
 import { ClientEditDialog } from './client-edit-dialog'
 import { DeleteClientButton } from './delete-client-button'
 import { FiscalVerificationCard } from './fiscal-verification-card'
+import { ClientPulse } from './client-pulse'
 
 export const dynamic = 'force-dynamic'
 
@@ -135,6 +136,12 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
             </div>
           ) : undefined
         }
+      />
+
+      <ClientPulse
+        projects={(projects ?? []).map((p) => ({ id: String(p.id), name: String(p.name), status: String(p.status) }))}
+        tasks={(tasks ?? []).map((t) => ({ id: String(t.id), title: String(t.title), status: String(t.status) }))}
+        invoices={(invoices ?? []).map((i) => ({ id: String(i.id), full_number: String(i.full_number), status: String(i.status), total: i.total }))}
       />
 
       <Card>
@@ -244,7 +251,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
       ) : null}
 
       {canEdit || tasks.length > 0 ? (
-        <Card>
+        <Card id="tasks">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Tareas</CardTitle>
             {canEdit ? (
@@ -286,7 +293,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Projects */}
-        <Card>
+        <Card id="projects">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Proyectos</CardTitle>
             <Button asChild size="sm">
@@ -318,7 +325,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
         </Card>
 
         {/* Proposals */}
-        <Card>
+        <Card id="invoices">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Propuestas</CardTitle>
             <Button asChild size="sm">

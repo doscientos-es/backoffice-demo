@@ -288,7 +288,7 @@ export function ListPage({
     headerAlign(headers[colIdx] ?? 'left', align?.[colIdx])
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex w-full max-w-none flex-col gap-6">
       <PageHeader
         title={title}
         description={description}

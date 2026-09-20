@@ -18,6 +18,7 @@ import { ProblemSolutionEditor } from '@/components/proposals/problem-solution-e
 import { ScopeModulesEditor } from '@/components/proposals/scope-modules-editor'
 import { AiNotice } from '@/components/ui/ai-notice'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { AttachmentSection, type AttachmentItem } from '@/components/ui/attachment-section'
 import { Button } from '@/components/ui/button'
 import { FormFeedback, useFormFeedback } from '@/components/ui/form-feedback'
 import { FormRow } from '@/components/ui/form-row'
@@ -85,6 +86,7 @@ export type ProposalEditorProps = {
   teamMembers: ProposalTeamMember[]
   initialTeamMemberIds: string[]
   initialItems: EditableItem[]
+  initialAttachments: AttachmentItem[]
   /** Optimistic-concurrency token captured with the record. */
   initialVersion: number
   /** When true, fields are read-only (proposal accepted/rejected). */
@@ -126,6 +128,7 @@ export function ProposalEditor({
   teamMembers,
   initialTeamMemberIds,
   initialItems,
+  initialAttachments,
   initialVersion,
   locked,
   aiEnabled,
@@ -394,14 +397,6 @@ export function ProposalEditor({
             <p className="text-muted-foreground mb-1 text-[11px] font-medium tracking-wide uppercase">
               Paso {activeStep + 1} de {EDITOR_STEPS.length} · {currentStep.label}
             </p>
-            <Input
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              disabled={locked}
-              placeholder="Título de la propuesta"
-              className="h-9 text-base font-medium"
-              aria-label="Título"
-            />
           </div>
           {!locked ? (
             <div className="flex items-center gap-3">
@@ -471,6 +466,17 @@ export function ProposalEditor({
                   </p>
                 </header>
 
+                <FormRow label="Título" htmlFor="proposal-title">
+                  <Input
+                    id="proposal-title"
+                    value={title}
+                    onChange={(event) => setTitle(event.target.value)}
+                    disabled={locked}
+                    placeholder="Título de la propuesta"
+                    aria-label="Título"
+                  />
+                </FormRow>
+
                 {aiEnabled && leadId && hasEmptyDraftFields && !locked ? (
                   <div className="border-primary/20 bg-primary/5 flex flex-wrap items-center justify-between gap-3 rounded-lg border p-4">
                     <div>
@@ -534,6 +540,13 @@ export function ProposalEditor({
                     )}
                   </div>
                 </div>
+
+                <AttachmentSection
+                  entityType="proposal"
+                  entityId={id}
+                  attachments={initialAttachments}
+                  canEdit={!locked}
+                />
               </section>
             ) : null}
 

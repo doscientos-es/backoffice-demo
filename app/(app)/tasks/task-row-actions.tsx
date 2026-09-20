@@ -1,6 +1,7 @@
 'use client'
 
-import { CircleCheck as CheckCircle2, LoaderCircle as Loader2, Trash as Trash2 } from 'lucide-react'
+import { CircleCheck as CheckCircle2, LoaderCircle as Loader2, Pencil, Trash as Trash2 } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
 
@@ -58,6 +59,9 @@ export function TaskRowActions({ taskId, status }: Props) {
           )}
         </Button>
       )}
+      <Button asChild type="button" variant="ghost" size="icon-sm" title="Editar tarea" aria-label="Editar tarea">
+        <Link href={`/tasks/${taskId}?edit=1`}><Pencil className="size-3.5" /></Link>
+      </Button>
       <Button
         type="button"
         variant="ghost"

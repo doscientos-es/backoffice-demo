@@ -14,7 +14,7 @@ export const TASK_STATUS_OPTIONS = [
   { value: 'todo', label: 'Por hacer' },
   { value: 'in_progress', label: 'En curso' },
   { value: 'in_review', label: 'Revisión' },
-  { value: 'done', label: 'Terminada' },
+  { value: 'done', label: 'Completada' },
   { value: 'cancelled', label: 'Cancelada' },
 ] as const
 

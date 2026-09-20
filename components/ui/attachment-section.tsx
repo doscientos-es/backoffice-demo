@@ -9,7 +9,6 @@ import {
   Paperclip,
   Upload as UploadCloud,
 } from 'lucide-react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 
@@ -236,8 +235,11 @@ export function AttachmentSection({
           <p className="text-sm font-medium">Suelta los archivos para adjuntarlos</p>
         </div>
       )}
-      <CardHeader className="flex flex-row items-center justify-between gap-2 pb-3">
-        <CardTitle className="min-w-0 truncate">{title}</CardTitle>
+      <CardHeader className="flex flex-col gap-3 pb-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <CardTitle className="truncate">{title}</CardTitle>
+          {canEdit ? <p className="text-muted-foreground mt-1 text-xs">PDF, Word, Excel, imágenes o CSV · hasta varios archivos</p> : null}
+        </div>
         {canEdit && (
           <>
             <input
@@ -258,12 +260,13 @@ export function AttachmentSection({
               onChange={handleFileChange}
               disabled={uploading}
             />
-            <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+            <div className="flex w-full shrink-0 items-center gap-2 sm:w-auto">
               <IconButton
                 type="button"
                 variant="outline"
                 label="Hacer foto"
-                className="sm:h-7 sm:w-auto sm:px-2.5"
+                size="sm"
+                className="h-9 flex-1 sm:w-auto sm:flex-none sm:px-3"
                 disabled={uploading}
                 onClick={() => cameraRef.current?.click()}
               >
@@ -274,7 +277,8 @@ export function AttachmentSection({
                 type="button"
                 variant="outline"
                 label={uploading ? 'Subiendo archivos' : 'Añadir archivos'}
-                className="sm:h-7 sm:w-auto sm:px-2.5"
+                size="sm"
+                className="h-9 flex-1 sm:w-auto sm:flex-none sm:px-3"
                 disabled={uploading}
                 onClick={() => fileRef.current?.click()}
               >
@@ -296,7 +300,8 @@ export function AttachmentSection({
                 type="button"
                 variant="outline"
                 label="Vincular desde Google Drive"
-                className="sm:h-7 sm:w-auto sm:px-2.5"
+                size="sm"
+                className="h-9 flex-1 sm:w-auto sm:flex-none sm:px-3"
                 onClick={openDriveDialog}
               >
                 <GoogleDriveIcon />
@@ -307,6 +312,22 @@ export function AttachmentSection({
         )}
       </CardHeader>
       <CardContent className="px-0">
+        {canEdit ? (
+          <button
+            type="button"
+            className="border-border hover:border-primary/50 hover:bg-primary/[0.03] mx-4 mb-4 flex min-h-24 w-[calc(100%-2rem)] flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed px-4 text-center transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+            onDragEnter={handleDragEnter}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <UploadCloud className="text-primary size-5" aria-hidden />
+            <span className="text-sm font-medium">Arrastra documentos aquí</span>
+            <span className="text-muted-foreground text-xs">o pulsa para seleccionar uno o varios</span>
+          </button>
+        ) : null}
         {errors.length > 0 && (
           <ul className="space-y-0.5 px-6 pb-2">
             {errors.map((msg) => (
@@ -333,29 +354,13 @@ export function AttachmentSection({
                   ) : null}
                 </div>
                 {a.source === 'drive' && a.web_view_link ? (
-                  <Button asChild variant="ghost" size="icon" className="size-7 shrink-0">
-                    <Link
-                      href={a.web_view_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="Abrir en Drive"
-                    >
-                      <ExternalLink className="size-3.5" />
-                      <span className="sr-only">Abrir en Drive</span>
-                    </Link>
-                  </Button>
+                  <IconButton href={a.web_view_link} variant="ghost" size="icon-sm" label="Abrir en Drive" className="shrink-0">
+                    <ExternalLink className="size-3.5" />
+                  </IconButton>
                 ) : (
-                  <Button asChild variant="ghost" size="icon" className="size-7 shrink-0">
-                    <Link
-                      href={`/api/documents/${a.id}/download`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="Descargar"
-                    >
-                      <Download className="size-3.5" />
-                      <span className="sr-only">Descargar</span>
-                    </Link>
-                  </Button>
+                  <IconButton href={`/api/documents/${a.id}/download`} variant="ghost" size="icon-sm" label="Descargar" className="shrink-0">
+                    <Download className="size-3.5" />
+                  </IconButton>
                 )}
               </li>
             ))}

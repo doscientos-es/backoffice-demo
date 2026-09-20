@@ -59,7 +59,7 @@ export function ChecklistSection({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
-          <CardTitle>Onboarding</CardTitle>
+          <CardTitle>Documentación y pendientes</CardTitle>
           {items.length > 0 && (
             <span className="text-muted-foreground text-xs tabular-nums">
               {done.length}/{items.length}
@@ -82,7 +82,7 @@ export function ChecklistSection({
       </CardHeader>
       <CardContent className="flex flex-col gap-1 px-0 pb-4">
         {items.length === 0 && (
-          <p className="text-muted-foreground px-6 py-2 text-sm">Sin elementos. Añade uno abajo.</p>
+          <p className="text-muted-foreground px-6 py-2 text-sm">Añade documentos, datos o pasos necesarios para cerrar el expediente.</p>
         )}
 
         {todo.map((item) => (
@@ -115,7 +115,7 @@ export function ChecklistSection({
             <Input
               ref={inputRef}
               name="label"
-              placeholder="Añadir elemento…"
+              placeholder="Ej.: Nota simple registral…"
               className="h-8 text-sm"
               disabled={pending}
             />

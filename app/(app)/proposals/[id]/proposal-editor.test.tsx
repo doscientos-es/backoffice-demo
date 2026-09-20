@@ -11,6 +11,7 @@ vi.mock('@/components/proposals/problem-solution-editor', () => ({
   ProblemSolutionEditor: () => null,
 }))
 vi.mock('@/components/proposals/scope-modules-editor', () => ({ ScopeModulesEditor: () => null }))
+vi.mock('@/components/ui/attachment-section', () => ({ AttachmentSection: ({ attachments }: { attachments: unknown[] }) => <div>Adjuntos ({attachments.length})</div> }))
 vi.mock('../actions', () => ({ setProposalTeamMembers: vi.fn(), updateProposal: vi.fn() }))
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }) }))
 
@@ -41,6 +42,7 @@ const props = {
   teamMembers: [],
   initialTeamMemberIds: [],
   initialItems: [],
+  initialAttachments: [{ id: 'attachment-1', name: 'brief.pdf', mime_type: 'application/pdf', size_bytes: 10, created_at: '2026-01-01' }],
   initialVersion: 1,
   locked: false,
   aiEnabled: false,
@@ -96,6 +98,8 @@ describe('ProposalEditor', () => {
     render(<ProposalEditor {...props} />)
 
     expect(screen.getByRole('heading', { name: 'Empieza por lo esencial' })).toBeDefined()
+    expect(screen.getByLabelText('Título')).toBeDefined()
+    expect(screen.getByText('Adjuntos (1)')).toBeDefined()
     fireEvent.click(screen.getByRole('button', { name: 'Continuar a Alcance' }))
     expect(screen.getByRole('heading', { name: 'Cuenta la propuesta' })).toBeDefined()
 

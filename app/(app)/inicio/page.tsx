@@ -14,6 +14,7 @@ import { canViewFinance, requireUser } from '@/lib/auth'
 import { getGreeting, parseDashboardRange } from '@/lib/utils/date'
 
 import { AvisosWidget } from './_components/avisos-widget'
+import { DemoWelcome } from './_components/demo-welcome'
 import { KpiGrid } from './_components/kpi-grid'
 import { MoneyOpportunitiesWidget } from './_components/money-opportunities-widget'
 import { MyDayWidget } from './_components/my-day-widget'
@@ -65,6 +66,8 @@ export default async function InicioPage({ searchParams }: PageProps) {
           </div>
         </div>
       </header>
+
+      <DemoWelcome />
 
       <section className="flex flex-col gap-5" aria-labelledby="inicio-prioridades">
         <div className="flex flex-wrap items-end justify-between gap-3">

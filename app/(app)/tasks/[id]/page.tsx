@@ -31,10 +31,12 @@ export default async function TaskDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams?: Promise<{ display?: string }>
+  searchParams?: Promise<{ display?: string; edit?: string }>
 }) {
   const { id } = await params
-  const displayMode = (await searchParams)?.display === 'dialog' ? 'dialog' : 'page'
+  const taskSearchParams = await searchParams
+  const displayMode = taskSearchParams?.display === 'dialog' ? 'dialog' : 'page'
+  const initialEdit = taskSearchParams?.edit === '1'
   const user = await requireUser()
   const supabase = await createServerClient()
 
@@ -103,6 +105,7 @@ export default async function TaskDetailPage({
             )}
             {canEdit ? (
               <TaskEditDialog
+                initialOpen={initialEdit}
                 task={{
                   id: id,
                   title: task.title as string,

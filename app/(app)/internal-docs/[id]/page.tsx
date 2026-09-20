@@ -1,4 +1,4 @@
-import { Download } from 'lucide-react'
+import { Download, FileText, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
@@ -168,7 +168,7 @@ export default async function InternalDocDetailPage({
           { label: doc.name as string },
         ]}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
             {canEdit && (
               <InternalDocEditDialog
                 doc={{
@@ -187,19 +187,15 @@ export default async function InternalDocDetailPage({
             {canEdit && (doc.mime_type as string | null) === 'application/pdf' && (
               <form action={reindexInternalDoc}>
                 <input type="hidden" name="id" value={id} />
-                <SubmitButton variant="outline" pendingLabel="Preparando contenido…">
-                  {extraction ? 'Volver a preparar' : 'Preparar para consultas'}
+                <SubmitButton variant="outline" size="sm" pendingLabel="Preparando contenido…">
+                  <Sparkles className="size-3.5" aria-hidden />
+                  {extraction ? 'Repreparar' : 'Preparar contenido'}
                 </SubmitButton>
               </form>
             )}
-            <Button asChild size="sm">
-              <Link
-                href={`/api/internal-docs/${id}/download`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Download className="size-3.5" />
-                Descargar
+            <Button asChild variant="outline" size="sm" className="gap-1.5">
+              <Link href={`/api/internal-docs/${id}/download`} target="_blank" rel="noopener noreferrer">
+                <Download className="size-3.5" aria-hidden /> Descargar
               </Link>
             </Button>
           </div>
@@ -296,14 +292,16 @@ export default async function InternalDocDetailPage({
         {/* Right column: preview */}
         <Card className="min-w-0">
           <CardHeader>
-            <CardTitle>Preview</CardTitle>
+          <CardTitle className="flex items-center gap-2"><FileText className="text-muted-foreground size-4" /> Vista previa</CardTitle>
           </CardHeader>
           <CardContent className="overflow-hidden rounded-b-lg p-0">
-            <DocPreview
-              url={previewUrl}
-              mimeType={doc.mime_type as string | null}
-              name={doc.name as string}
-            />
+            {(doc.mime_type as string | null)?.startsWith('image/') && previewUrl ? (
+              <div className="bg-muted/20 flex min-h-96 items-center justify-center p-6">
+                <img src={previewUrl} alt={`Vista previa de ${doc.name as string}`} className="max-h-[70vh] max-w-full rounded-lg object-contain shadow-sm" />
+              </div>
+            ) : (
+              <DocPreview url={previewUrl} mimeType={doc.mime_type as string | null} name={doc.name as string} />
+            )}
           </CardContent>
         </Card>
       </div>

@@ -12,12 +12,7 @@ import {
   Inbox,
   Key as KeyRound,
   LifeBuoy,
-  Mail,
-  Megaphone,
-  MousePointerClick,
   Receipt,
-  Repeat,
-  Share2,
   Users,
   Wallet,
 } from 'lucide-react'
@@ -72,7 +67,6 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
     label: 'Finanzas',
     items: [
       { href: '/invoices', label: 'Facturas', icon: Receipt, allowedRoles: ADMIN_ROLES },
-      { href: '/subscriptions', label: 'Suscripciones', icon: Repeat, allowedRoles: ADMIN_ROLES },
       { href: '/finance', label: 'Finanzas', icon: Wallet, allowedRoles: ADMIN_ROLES },
       {
         href: '/finance/portfolio',
@@ -80,25 +74,6 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
         icon: BarChart3,
         allowedRoles: ADMIN_ROLES,
       },
-    ],
-  },
-  {
-    label: 'Growth',
-    items: [
-      { href: '/marketing', label: 'Publicidad', icon: Megaphone, allowedRoles: ADMIN_ROLES },
-      {
-        href: '/marketing/newsletters',
-        label: 'Newsletters',
-        icon: Mail,
-        allowedRoles: ADMIN_ROLES,
-      },
-      {
-        href: '/marketing/events',
-        label: 'Eventos',
-        icon: MousePointerClick,
-        allowedRoles: ADMIN_ROLES,
-      },
-      { href: '/social', label: 'Social', icon: Share2, allowedRoles: ADMIN_ROLES },
     ],
   },
   {

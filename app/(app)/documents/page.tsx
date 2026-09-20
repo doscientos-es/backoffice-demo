@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 
 import { ListPage } from '@/components/layout/list-page'
+import { Card, CardContent } from '@/components/ui/card'
 import { requireUser } from '@/lib/auth'
 import { createServerClient } from '@/lib/supabase/server'
 import { formatDate } from '@/lib/utils'
+import { FileText, ShieldCheck } from 'lucide-react'
 import { escapeIlike, parsePage, parseSortParam, parseStringParam } from '@/lib/utils/search-params'
 
 export const metadata: Metadata = { title: 'Documentos · doscientos' }
@@ -42,6 +44,23 @@ export default async function DocumentsPage({
   return (
     <ListPage
       title="Documentos"
+      description="Consulta y localiza rápidamente los documentos compartidos en tus clientes y expedientes."
+      summary={
+        <Card className="border-primary/15 bg-primary/[0.03]">
+          <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-lg">
+                <FileText className="size-4" aria-hidden />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Tu documentación, siempre localizada</p>
+                <p className="text-muted-foreground mt-0.5 text-xs">Para subir un archivo, abre el cliente o expediente al que pertenece y arrástralo a su zona de documentos.</p>
+              </div>
+            </div>
+            <div className="text-muted-foreground flex shrink-0 items-center gap-1.5 text-xs"><ShieldCheck className="size-3.5" /> Acceso controlado</div>
+          </CardContent>
+        </Card>
+      }
       empty={q ? 'Sin coincidencias.' : 'Aún no hay documentos.'}
       error={error?.message}
       searchKey="q"

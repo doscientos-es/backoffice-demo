@@ -39,11 +39,12 @@ type Task = {
 interface Props {
   task: Task
   members: Array<{ id: string; name: string }>
+  initialOpen?: boolean
 }
 
-export function TaskEditDialog({ task, members }: Props) {
+export function TaskEditDialog({ task, members, initialOpen = false }: Props) {
   const router = useRouter()
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(initialOpen)
   const [conflictOpen, setConflictOpen] = useState(false)
   const feedback = useFormFeedback()
   const { formRef, isDirty, reset, markDirty } = useFormDirty<HTMLFormElement>()

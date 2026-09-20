@@ -117,7 +117,7 @@ export const TASK_STATUS: StatusMeta<TaskStatus> = {
   todo: { label: 'Por hacer', variant: 'neutral' },
   in_progress: { label: 'En curso', variant: 'info' },
   in_review: { label: 'Revisión', variant: 'warning' },
-  done: { label: 'Terminada', variant: 'success' },
+  done: { label: 'Completadas', variant: 'success' },
   cancelled: { label: 'Cancelada', variant: 'danger' },
 }
 
