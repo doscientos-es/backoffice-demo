@@ -397,12 +397,11 @@ function ProposalPdfDocument({ data }: { data: ProposalPdfData }) {
         </View>
         <View style={styles.metricCard}>
           <Text style={styles.metricLabel}>Inversión inicial</Text>
-          <Text style={styles.metricValue}>{money(data.total)}</Text>
-          <Text style={styles.metricText}>
-            {validUntil
-              ? `Válida hasta el ${validUntil}.`
-              : 'Propuesta personalizada de doscientos.'}
-          </Text>
+          <Text style={styles.metricValue}>{money(data.subtotal)}</Text>
+          <Text style={styles.metricText}>(IVA no incluido)</Text>
+          {validUntil ? (
+            <Text style={styles.metricText}>Válida hasta el {validUntil}.</Text>
+          ) : null}
         </View>
         <Text style={styles.coverFooter}>Documento confidencial · doscientos.es</Text>
       </Page>
@@ -480,10 +479,10 @@ function ProposalPdfDocument({ data }: { data: ProposalPdfData }) {
           <Text style={styles.sectionLabel}>Propuesta económica</Text>
           <Text style={styles.sectionTitle}>Inversión y alcance</Text>
           <View style={styles.investment}>
-            <Text style={styles.investmentLabel}>Inversión inicial</Text>
-            <Text style={styles.investmentValue}>{money(data.total)}</Text>
+            <Text style={styles.investmentLabel}>Inversión inicial (sin IVA)</Text>
+            <Text style={styles.investmentValue}>{money(data.subtotal)}</Text>
             <Text style={styles.investmentText}>
-              Incluye {money(data.subtotal)} de base imponible e IVA de {money(data.taxAmount)}.
+              Se añadirá el IVA correspondiente: {money(data.taxAmount)}.
             </Text>
           </View>
           <View style={styles.table}>

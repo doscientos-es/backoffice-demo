@@ -48,9 +48,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const [leadsRes, clientsRes, projectsRes, invoicesRes, tasksRes, vaultRes] = await Promise.all([
     supabase
       .from('leads')
-      .select('id, name, company, email')
+      .select('id, name, alias, company, email')
       .is('deleted_at', null)
-      .or(`name.ilike.${pattern},company.ilike.${pattern},email.ilike.${pattern}`)
+      .or(
+        `name.ilike.${pattern},alias.ilike.${pattern},company.ilike.${pattern},email.ilike.${pattern}`,
+      )
       .order('updated_at', { ascending: false })
       .limit(PER_GROUP),
     supabase
@@ -93,11 +95,19 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const items: SearchResultItem[] = []
 
   for (const r of leadsRes.data ?? []) {
+    const alias = (r.alias as string | null)?.trim()
     items.push({
       id: `lead-${r.id as string}`,
       type: 'lead',
-      label: r.name as string,
-      sublabel: (r.company as string | null) ?? (r.email as string | null) ?? null,
+      label: (alias || r.name) as string,
+      sublabel:
+        [
+          alias && alias !== r.name ? (r.name as string) : null,
+          r.company as string | null,
+          r.email as string | null,
+        ]
+          .filter(Boolean)
+          .join(' · ') || null,
       href: `/leads/${r.id as string}`,
     })
   }
