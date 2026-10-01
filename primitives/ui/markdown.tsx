@@ -63,7 +63,7 @@ function renderInline(line: string): ReactNode[] {
 type Block =
   | { kind: 'heading'; level: 1 | 2 | 3 | 4; text: string }
   | { kind: 'ul'; items: string[] }
-  | { kind: 'ol'; items: string[] }
+  | { kind: 'ol'; items: string[]; start: number }
   | { kind: 'quote'; lines: string[] }
   | { kind: 'p'; text: string }
   | { kind: 'hr' }
@@ -105,11 +105,14 @@ function tokenize(src: string): Block[] {
     }
     if (/^\d+\.\s+/.test(line)) {
       const items: string[] = []
+      // Keep the source numbering: clauses separated by blank lines become
+      // separate lists, which would otherwise all restart at 1.
+      const start = Number.parseInt(line, 10) || 1
       while (i < lines.length && /^\d+\.\s+/.test(lines[i] ?? '')) {
         items.push((lines[i] ?? '').replace(/^\d+\.\s+/, ''))
         i++
       }
-      blocks.push({ kind: 'ol', items })
+      blocks.push({ kind: 'ol', items, start })
       continue
     }
     if (line.startsWith('> ')) {
@@ -180,7 +183,7 @@ export function Markdown({ source, className }: { source: string; className?: st
           case 'ol':
             return (
               // biome-ignore lint/suspicious/noArrayIndexKey: blocks are fully recomputed from source on every render
-              <ol key={i} className="ml-5 list-decimal space-y-1">
+              <ol key={i} start={b.start} className="ml-5 list-decimal space-y-1">
                 {b.items.map((it, j) => (
                   // biome-ignore lint/suspicious/noArrayIndexKey: list items are fully recomputed from source on every render
                   <li key={j}>{renderInline(it)}</li>
