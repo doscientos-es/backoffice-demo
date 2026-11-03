@@ -1,45 +1,61 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
+import { useState } from "react";
 
-import { EntityCombobox } from '@/components/ui/entity-combobox'
-import { FormRow } from '@/components/ui/form-row'
-import { Input } from '@/components/ui/input'
-import { Select } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { SUBSCRIPTION_BILLING_CYCLE, SUBSCRIPTION_STATUS } from '@/lib/status'
+import { EntityCombobox } from "@/components/ui/entity-combobox";
+import { FormRow } from "@/components/ui/form-row";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { SUBSCRIPTION_BILLING_CYCLE, SUBSCRIPTION_STATUS } from "@/lib/status";
 
-type ClientOption = { id: string; name: string }
-type ProjectOption = { id: string; name: string }
+type ClientOption = { id: string; name: string };
+type ProjectOption = { id: string; name: string; client_id: string };
 
 export type SubscriptionFormValues = {
-  client_id: string
-  project_id: string
-  name: string
-  description: string
-  status: string
-  billing_cycle: string
-  amount: number
-  vat_rate: number
-  start_date: string
-  end_date: string
-  notes: string
-}
+  client_id: string;
+  project_id: string;
+  name: string;
+  description: string;
+  status: string;
+  billing_cycle: string;
+  amount: number;
+  vat_rate: number;
+  start_date: string;
+  end_date: string;
+  notes: string;
+};
 
 type Props = {
-  clients: ClientOption[]
-  projects: ProjectOption[]
+  clients: ClientOption[];
+  projects: ProjectOption[];
   /** Pass a full SubscriptionFormValues when editing; omit for create (defaults kick in). */
-  defaults?: Partial<SubscriptionFormValues>
-}
+  defaults?: Partial<SubscriptionFormValues>;
+};
 
 export function SubscriptionFormFields({ clients, projects, defaults }: Props) {
-  const today = new Date().toISOString().slice(0, 10)
-  const [projectId, setProjectId] = useState(defaults?.project_id ?? '')
+  const today = new Date().toISOString().slice(0, 10);
+  const [projectId, setProjectId] = useState(defaults?.project_id ?? "");
+  const [clientId, setClientId] = useState(defaults?.client_id ?? "");
+  const clientProjects = clientId
+    ? projects.filter((p) => p.client_id === clientId)
+    : [];
+
+  function changeClient(nextClientId: string) {
+    setClientId(nextClientId);
+    // Drop the selected project if it belongs to a different client.
+    const current = projects.find((p) => p.id === projectId);
+    if (current && current.client_id !== nextClientId) setProjectId("");
+  }
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      <FormRow label="Nombre" htmlFor="sub-name" required className="sm:col-span-2">
+      <FormRow
+        label="Nombre"
+        htmlFor="sub-name"
+        required
+        className="sm:col-span-2"
+      >
         <Input
           id="sub-name"
           name="name"
@@ -50,7 +66,13 @@ export function SubscriptionFormFields({ clients, projects, defaults }: Props) {
       </FormRow>
 
       <FormRow label="Cliente" htmlFor="sub-client" required>
-        <Select id="sub-client" name="client_id" defaultValue={defaults?.client_id} required>
+        <Select
+          id="sub-client"
+          name="client_id"
+          value={clientId}
+          onChange={(e) => changeClient(e.target.value)}
+          required
+        >
           <option value="">— Selecciona cliente —</option>
           {clients.map((c) => (
             <option key={c.id} value={c.id}>
@@ -60,19 +82,37 @@ export function SubscriptionFormFields({ clients, projects, defaults }: Props) {
         </Select>
       </FormRow>
 
-      <FormRow label="Proyecto" htmlFor="sub-project">
+      <FormRow
+        label="Proyecto"
+        htmlFor="sub-project"
+        hint={
+          !clientId
+            ? "Selecciona primero un cliente."
+            : clientProjects.length === 0
+              ? "Este cliente no tiene proyectos."
+              : undefined
+        }
+      >
         <EntityCombobox
+          key={clientId}
           id="sub-project"
           name="project_id"
-          items={projects.map((p) => ({ id: p.id, label: p.name }))}
+          items={clientProjects.map((p) => ({ id: p.id, label: p.name }))}
           value={projectId}
           onChange={setProjectId}
-          placeholder="Buscar proyecto…"
+          placeholder={
+            clientId ? "Buscar proyecto…" : "Selecciona cliente primero"
+          }
+          disabled={!clientId}
         />
       </FormRow>
 
       <FormRow label="Estado" htmlFor="sub-status">
-        <Select id="sub-status" name="status" defaultValue={defaults?.status ?? 'active'}>
+        <Select
+          id="sub-status"
+          name="status"
+          defaultValue={defaults?.status ?? "active"}
+        >
           {Object.entries(SUBSCRIPTION_STATUS).map(([v, m]) => (
             <option key={v} value={v}>
               {m.label}
@@ -85,7 +125,7 @@ export function SubscriptionFormFields({ clients, projects, defaults }: Props) {
         <Select
           id="sub-billing"
           name="billing_cycle"
-          defaultValue={defaults?.billing_cycle ?? 'monthly'}
+          defaultValue={defaults?.billing_cycle ?? "monthly"}
         >
           {Object.entries(SUBSCRIPTION_BILLING_CYCLE).map(([v, label]) => (
             <option key={v} value={v}>
@@ -130,14 +170,28 @@ export function SubscriptionFormFields({ clients, projects, defaults }: Props) {
       </FormRow>
 
       <FormRow label="Fin (opcional)" htmlFor="sub-end">
-        <Input id="sub-end" name="end_date" type="date" defaultValue={defaults?.end_date ?? ''} />
+        <Input
+          id="sub-end"
+          name="end_date"
+          type="date"
+          defaultValue={defaults?.end_date ?? ""}
+        />
       </FormRow>
 
       <FormRow label="Descripción" htmlFor="sub-desc" className="sm:col-span-2">
-        <Textarea id="sub-desc" name="description" defaultValue={defaults?.description} rows={2} />
+        <Textarea
+          id="sub-desc"
+          name="description"
+          defaultValue={defaults?.description}
+          rows={2}
+        />
       </FormRow>
 
-      <FormRow label="Notas internas" htmlFor="sub-notes" className="sm:col-span-2">
+      <FormRow
+        label="Notas internas"
+        htmlFor="sub-notes"
+        className="sm:col-span-2"
+      >
         <Textarea
           id="sub-notes"
           name="notes"
@@ -147,5 +201,5 @@ export function SubscriptionFormFields({ clients, projects, defaults }: Props) {
         />
       </FormRow>
     </div>
-  )
+  );
 }

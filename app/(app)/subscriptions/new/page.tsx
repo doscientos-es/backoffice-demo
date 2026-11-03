@@ -20,7 +20,7 @@ export default async function NewSubscriptionPage() {
   const supabase = await createServerClient()
   const [{ data: clients }, { data: projects }] = await Promise.all([
     supabase.from('clients').select('id, name').is('deleted_at', null).order('name'),
-    supabase.from('projects').select('id, name').is('deleted_at', null).order('name'),
+    supabase.from('projects').select('id, name, client_id').is('deleted_at', null).order('name'),
   ])
 
   return (
@@ -45,7 +45,7 @@ export default async function NewSubscriptionPage() {
           >
             <SubscriptionFormFields
               clients={(clients ?? []) as { id: string; name: string }[]}
-              projects={(projects ?? []) as { id: string; name: string }[]}
+              projects={(projects ?? []) as { id: string; name: string; client_id: string }[]}
             />
 
             <div className="flex justify-end">

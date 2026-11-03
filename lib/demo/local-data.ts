@@ -80,6 +80,59 @@ class LocalQuery implements PromiseLike<ListResult> {
   }
 }
 
+const CYCLE_MONTHS: Record<string, number> = { monthly: 1, quarterly: 3, yearly: 12 }
+
+function addMonthsIso(date: string, months: number): string {
+  const d = new Date(`${date}T00:00:00Z`)
+  const day = d.getUTCDate()
+  d.setUTCDate(1)
+  d.setUTCMonth(d.getUTCMonth() + months)
+  const lastDay = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate()
+  d.setUTCDate(Math.min(day, lastDay))
+  return d.toISOString().slice(0, 10)
+}
+
+/**
+ * Demo version of `generate_subscription_invoice`: creates an in-memory draft
+ * invoice for the next period and advances the cursor. Changes live only in the
+ * server process, so they reset on restart.
+ */
+function generateSubscriptionInvoice(args: Row = {}): string | null {
+  const sub = (tables.subscriptions ?? []).find((s) => s.id === args.p_subscription_id && !s.deleted_at)
+  if (!sub || sub.status !== 'active' || !sub.next_invoice_date) return null
+  const periodStart: string = sub.next_invoice_date
+  const today = new Date().toISOString().slice(0, 10)
+  if (sub.end_date && periodStart > sub.end_date) return null
+  if (!args.p_allow_future && periodStart > today) return null
+
+  const subtotal = Number(sub.amount)
+  const taxAmount = Math.round(subtotal * Number(sub.vat_rate)) / 100
+  const invoices = (tables.invoices ??= [])
+  const id = crypto.randomUUID()
+  invoices.push({
+    id,
+    full_number: `D-${today.slice(0, 4)}-${String(100 + invoices.length).padStart(3, '0')}`,
+    status: 'draft',
+    subtotal,
+    tax_amount: taxAmount,
+    total: Math.round((subtotal + taxAmount) * 100) / 100,
+    issue_date: today,
+    due_date: null,
+    client_id: sub.client_id,
+    clients: sub.clients ?? null,
+    project_id: sub.project_id ?? null,
+    subscription_id: sub.id,
+    subscription_period_start: periodStart,
+    deleted_at: null,
+  })
+  sub.next_invoice_date = addMonthsIso(periodStart, CYCLE_MONTHS[sub.billing_cycle] ?? 1)
+  return id
+}
+
+function runProcedure(name: string, args?: Row): unknown {
+  return name === 'generate_subscription_invoice' ? generateSubscriptionInvoice(args) : null
+}
+
 const demoUser = { id: DEMO_USER_ID, email: 'marta@demo.invalid', user_metadata: { name: 'Marta Demo' } }
 
 // The cloned application still has many data access call sites. This facade
@@ -129,7 +182,7 @@ export function createLocalDataClient(): LocalDataClient {
   const channel: LocalChannel = { on: () => channel, subscribe: () => channel, unsubscribe: async () => 'ok' }
   return {
     auth: { getUser: async () => ({ data: { user: demoUser }, error: null }), getSession: async () => ({ data: { session: { access_token: 'demo-local-session' } }, error: null }), signOut: async () => ({ error: null }), signInWithPassword: async () => ({ data: { user: demoUser, session: null }, error: null }), signInWithOAuth: async () => ({ data: { provider: 'demo', url: null }, error: null }), verifyOtp: async () => ({ error: null }), mfa: { getAuthenticatorAssuranceLevel: async () => ({ data: { currentLevel: 'aal2', nextLevel: 'aal2' }, error: null }), listFactors: async () => ({ data: { totp: [] }, error: null }) }, admin: { listUsers: async () => ({ data: { users: [] }, error: null }) } },
-    from: (table) => new LocalQuery(table), rpc: async () => ({ data: null, error: null }), channel: () => channel,
+    from: (table) => new LocalQuery(table), rpc: async (name, args) => ({ data: runProcedure(name, args), error: null }), channel: () => channel,
     removeChannel: async () => 'ok', removeAllChannels: async () => [], getChannels: () => [],
     storage: { from: () => ({ upload: async () => ({ data: null, error: null }), remove: async () => ({ data: [], error: null }), download: async () => ({ data: null, error: null }), getPublicUrl: () => ({ data: { publicUrl: '' } }), createSignedUrl: async () => ({ data: { signedUrl: '' }, error: null }), list: async () => ({ data: [], error: null }) }) },
     functions: { invoke: async () => ({ data: null, error: { message: 'Función no disponible en la demo' } }) },

@@ -19,13 +19,20 @@ export function formatEUR(value: number | string | null | undefined): string {
 export function formatDate(value: string | Date | null | undefined): string {
   if (!value) return '—'
   const d = typeof value === 'string' ? new Date(value) : value
-  return new Intl.DateTimeFormat('es-ES', { dateStyle: 'medium' }).format(d)
+  return new Intl.DateTimeFormat('es-ES', {
+    dateStyle: 'medium',
+    timeZone: 'Europe/Madrid',
+  }).format(d)
 }
 
 export function formatDateTime(value: string | Date | null | undefined): string {
   if (!value) return '—'
   const d = typeof value === 'string' ? new Date(value) : value
-  return new Intl.DateTimeFormat('es-ES', { dateStyle: 'medium', timeStyle: 'short' }).format(d)
+  return new Intl.DateTimeFormat('es-ES', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'Europe/Madrid',
+  }).format(d)
 }
 
 export function relativeTime(value: string | Date | null | undefined): string {

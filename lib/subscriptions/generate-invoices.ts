@@ -1,14 +1,14 @@
-import { scopedLogger } from '@/lib/logger'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { scopedLogger } from "@/lib/logger";
+import { createAdminClient } from "@/lib/supabase/admin";
 
-const log = scopedLogger('subscriptions.generate-invoices')
-const MAX_PERIODS_PER_SUBSCRIPTION = 120
+const log = scopedLogger("subscriptions.generate-invoices");
+const MAX_PERIODS_PER_SUBSCRIPTION = 120;
 
 export type SubscriptionInvoiceRun = {
-  checked: number
-  generated: string[]
-  failures: { subscriptionId: string; error: string }[]
-}
+  checked: number;
+  generated: string[];
+  failures: { subscriptionId: string; error: string }[];
+};
 
 /**
  * Generates every overdue recurring invoice. The database function locks each
@@ -17,50 +17,97 @@ export type SubscriptionInvoiceRun = {
  * period.
  */
 export async function generateDueSubscriptionInvoices(): Promise<SubscriptionInvoiceRun> {
-  const supabase = createAdminClient()
-  const today = new Date().toISOString().slice(0, 10)
+  const supabase = createAdminClient();
+  const today = new Date().toISOString().slice(0, 10);
   const { data: subscriptions, error } = await supabase
-    .from('subscriptions')
-    .select('id')
-    .eq('status', 'active')
-    .is('deleted_at', null)
-    .lte('next_invoice_date', today)
-    .order('next_invoice_date', { ascending: true })
-    .limit(1_000)
+    .from("subscriptions")
+    .select("id")
+    .eq("status", "active")
+    .is("deleted_at", null)
+    .lte("next_invoice_date", today)
+    .order("next_invoice_date", { ascending: true })
+    .limit(1_000);
 
-  if (error) throw new Error(error.message)
+  if (error) throw new Error(error.message);
 
-  const generated: string[] = []
-  const failures: SubscriptionInvoiceRun['failures'] = []
+  const generated: string[] = [];
+  const failures: SubscriptionInvoiceRun["failures"] = [];
 
   for (const subscription of subscriptions ?? []) {
-    const subscriptionId = subscription.id as string
+    const result = await generateSubscriptionInvoices(
+      subscription.id as string,
+    );
+    generated.push(...result.generated);
+    failures.push(...result.failures);
+  }
 
-    for (let period = 0; period < MAX_PERIODS_PER_SUBSCRIPTION; period += 1) {
-      const { data: invoiceId, error: generateError } = await supabase.rpc(
-        'generate_subscription_invoice',
-        { p_subscription_id: subscriptionId },
-      )
+  return { checked: subscriptions?.length ?? 0, generated, failures };
+}
 
-      if (generateError) {
-        failures.push({ subscriptionId, error: generateError.message })
-        log.error({ err: generateError, subscriptionId }, 'subscription_invoice_generation_failed')
-        break
-      }
+/**
+ * Creates the draft for the subscription's next period, even if it is not due
+ * yet. The database advances the billing cursor, so the cron never duplicates
+ * it. Returns the invoice id, or null when nothing can be generated (paused,
+ * cancelled or past the end date).
+ */
+export async function generateNextSubscriptionInvoice(
+  subscriptionId: string,
+): Promise<string | null> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase.rpc("generate_subscription_invoice", {
+    p_subscription_id: subscriptionId,
+    p_allow_future: true,
+  });
+  if (error) {
+    log.error(
+      { err: error, subscriptionId },
+      "subscription_next_invoice_failed",
+    );
+    throw new Error(error.message);
+  }
+  return (data as string | null) ?? null;
+}
 
-      if (!invoiceId) break
-      generated.push(invoiceId as string)
+/**
+ * Generates every overdue invoice (catching up past periods) for a single
+ * subscription. Used by the cron job and by the manual "generate" button.
+ * Returns nothing generated when the subscription is paused, cancelled, not due
+ * yet or already past its end date.
+ */
+export async function generateSubscriptionInvoices(
+  subscriptionId: string,
+): Promise<Omit<SubscriptionInvoiceRun, "checked">> {
+  const supabase = createAdminClient();
+  const generated: string[] = [];
+  const failures: SubscriptionInvoiceRun["failures"] = [];
 
-      if (period === MAX_PERIODS_PER_SUBSCRIPTION - 1) {
-        const error = 'Se alcanzó el límite de periodos recuperados'
-        failures.push({ subscriptionId, error })
-        log.warn(
-          { subscriptionId, maxPeriods: MAX_PERIODS_PER_SUBSCRIPTION },
-          'catch_up_limit_reached',
-        )
-      }
+  for (let period = 0; period < MAX_PERIODS_PER_SUBSCRIPTION; period += 1) {
+    const { data: invoiceId, error: generateError } = await supabase.rpc(
+      "generate_subscription_invoice",
+      { p_subscription_id: subscriptionId },
+    );
+
+    if (generateError) {
+      failures.push({ subscriptionId, error: generateError.message });
+      log.error(
+        { err: generateError, subscriptionId },
+        "subscription_invoice_generation_failed",
+      );
+      break;
+    }
+
+    if (!invoiceId) break;
+    generated.push(invoiceId as string);
+
+    if (period === MAX_PERIODS_PER_SUBSCRIPTION - 1) {
+      const error = "Se alcanzó el límite de periodos recuperados";
+      failures.push({ subscriptionId, error });
+      log.warn(
+        { subscriptionId, maxPeriods: MAX_PERIODS_PER_SUBSCRIPTION },
+        "catch_up_limit_reached",
+      );
     }
   }
 
-  return { checked: subscriptions?.length ?? 0, generated, failures }
+  return { generated, failures };
 }

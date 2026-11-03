@@ -15,7 +15,7 @@ type Props = {
   id: string
   version: number
   clients: { id: string; name: string }[]
-  projects: { id: string; name: string }[]
+  projects: { id: string; name: string; client_id: string }[]
   defaults: SubscriptionFormValues
 }
 
